@@ -17,7 +17,7 @@ via google translator, without wasting time in clicking & dragging; based on sel
 
 # Examples:
 1. For brief instructions, type in the terminal: ````python google_translate.py -h```` <br>
-### Example (1): This is the simplest command: <br>
+### 1) Example (1): This is the simplest command: <br>
 ````
 python google_translate.py -i images -l en_ar <br>
 ````
@@ -25,14 +25,14 @@ python google_translate.py -i images -l en_ar <br>
 -The argument <b>'-l en_ar'</b> means translating from english (en) to arabic (ar), separated with an underscore. <br>
 -To find your language's shortcut, see the <b>'languages_list.txt'</b> file. <br>
 -When this command is executed, google chrome will show up & start translating on its own (it's not a virus o_o). <br> <br>
-### Example (2): <br>
+### 2) Example (2): <br>
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5
 ````
 -The argument <b>'-o output.txt'</b> is where your translated text will be saved, it must be inside the program folder, otherwise use absolute path. <br>
 -The argument <b>'-c 5'</b> means the time between uploading & copying (in seconds); use it wisely, if your internet speed is slow or the image is too big, it will cause an error if it's too short.
 
-### Example (4):
+### 3) Example (3):
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5 -q 60 -k true
 ````
