@@ -1,5 +1,3 @@
-# Language choices
-
 import os
 import sys
 import pyperclip
@@ -115,8 +113,7 @@ options.add_experimental_option('useAutomationExtension', False)
 options.add_argument('start-maximized')                 # Same as terminal args, just removed the (--) prefix.
 options.add_argument('remote-debugging-port=9222')      # Port must be > 1000.
 
-service = Service(executable_path='chromedriver/chromedriver')
-driver = webdriver.Chrome(service=service, options=options, keep_alive=keep_alive)
+driver = webdriver.Chrome(options=options, keep_alive=keep_alive)
 
 URL = f'https://translate.google.com/?sl={lang_1}&tl={lang_2}&op=images'
 driver.get(URL)
