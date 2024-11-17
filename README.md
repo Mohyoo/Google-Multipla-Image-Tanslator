@@ -13,17 +13,18 @@ via google translator, without wasting time in clicking & dragging; based on sel
 -Open the terminal in the program's directory and:
 1) type: ````python install_requirements.py```` (or python3), and wait.
 2) A <b>'venv'</b> folder should appear, now before executing the program, activate the venv: ````source venv/bin/activate````
-2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues !).
+2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues!).
 
 # Examples:
-1) For brief instructions, type in the terminal: python google_translate.py -h <br> <br>
+1) For brief instructions, type in the terminal: ````python google_translate.py -h```` <br> <br>
 2) Example (1): This is the simplest command: <br>
 ````
 python google_translate.py -i images -l en_ar <br>
 ````
 -The argument <b>'-i images'</b> is the folder containing the images, it must be inside the program folder, otherwise use absolute path. <br>
--The argument <b>'-l en_ar'</b> means translating from english (en) to arabic (ar), separated with an underscore.
--To find your language's shortcut, see the 'languages_list.txt' file. <br> <br>
+-The argument <b>'-l en_ar'</b> means translating from english (en) to arabic (ar), separated with an underscore. <br>
+-To find your language's shortcut, see the <b>'languages_list.txt'</b> file. <br>
+-When this command is executed, google chrome will show up & start translating on its own (it's not a virus o_o). <br> <br>
 3) Example (2): <br>
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5
@@ -35,7 +36,7 @@ python google_translate.py -i images -l en_ar -o output.txt -c 5
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5 -q 60 -k true
 ````
--The argument <b>'-q 60'</b> means: when the translation finishes, how much time to wait before closing th browser & exiting the program. <br>
+-The argument <b>'-q 60'</b> means: when the translation finishes, how much time to wait before closing the browser & exiting the program. <br>
 -The argument <b>'-k true'</b> is an HTTP connection parameter; when true, the client binding uses the
  same connection for every request, which <b>may</b> speed up the process.
 
