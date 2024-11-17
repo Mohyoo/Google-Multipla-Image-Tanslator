@@ -36,7 +36,7 @@ python google_translate.py -i images -l en_ar -o output.txt -c 5
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5 -q 60 -k true
 ````
--The argument <b>'-q 60'</b> means: when the translation finishes, how much time to wait before closing the browser & exiting the program. <br>
+-The argument <b>'-q 60'</b> means: when the translation finishes, how much time to wait before closing the browser & exiting the program (in seconds). <br>
 -The argument <b>'-k true'</b> is an HTTP connection parameter; when true, the client binding uses the
  same connection for every request, which <b>may</b> speed up the process.
 
