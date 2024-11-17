@@ -16,7 +16,7 @@ via google translator, without wasting time in clicking & dragging; based on sel
 2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues!).
 
 # Examples:
-1. For brief instructions, type in the terminal: ````python google_translate.py -h```` <br> <br>
+1. For brief instructions, type in the terminal: ````python google_translate.py -h```` <br>
 ### Example (1): This is the simplest command: <br>
 ````
 python google_translate.py -i images -l en_ar <br>
