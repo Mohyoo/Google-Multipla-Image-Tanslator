@@ -29,7 +29,7 @@ python google_translate.py -i images -l en_ar <br>
 ````
 python google_translate.py -i images -l en_ar -o output.txt -c 5
 ````
--The argument <b>'-o output.txt'</b> is where your translated text will be saved, it must be inside the program folder, otherwise use absolute path. <br>
+-The argument <b>'-o output.txt'</b> is where your translated text will be saved, here it will be saved inside the program folder, otherwise use absolute path. <br>
 -The argument <b>'-c 5'</b> means the time between uploading & copying (in seconds); use it wisely, if your internet speed is slow or the image is too big, it will cause an error if it's too short.
 
 ### 3) Example 3:
