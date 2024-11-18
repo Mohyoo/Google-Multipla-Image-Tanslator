@@ -5,31 +5,38 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from time import sleep
 
+# Setup fonts.
+R  = '\033[31m\033[1m'      # Red.
+G  = '\033[32m\033[1m'      # Green.
+B  = '\033[34m'             # Blue.
+RF = '\033[0m'              # Reset Font.
+
 
 # Prepare the functions.
 def show_instructions():
     """Display instructions & commands."""
-    message = ("*) First thing first:\n"
-               "   -Put your images in a folder, then copy the folder's path.\n"
-               "   -Go to 'languages_list.txt' and find your language's shortcut.\n\n"
-               "*) Required arguments:\n"
-               "   -i        Path to the images folder.\n"
-               "   -l        Languages, e.g: '-l en_ar', this means from english to arabic;\n"
-               "             don't forget the underscore.\n\n"
-               "*) Optional arguments:\n"
-               "   -o        Path of the output text file, default is: current directory.\n"
-               "   -c        Waiting time for an image to be translated before trying to copy its\n"
-               "             text (in seconds), default is 5.\n"
-               "   -q        After finishing, time to wait before closing the browser (in seconds),\n"
-               "             default is 60.\n"
-               "   -k        Keep the same connection for every server request (it may speed up the\n"
-               "             process), default is false.\n\n"
-               "*) Tips:\n"
-               "   -Compress your files before uploading, thus you can use less waiting time argument (-c);\n"
-               "    you can use 'Curtail' for Linux, or 'MassCompressor' for Windows.\n"
-               "   -Use waiting time (-c) according to image size & internet speed, if it's too low\n"
-               "    you may get an error.\n"
-               "   -Not all languages are supported for image translating.")
+    message = (f"""
+               {G}*) First thing first:{RF}
+                  -Put your images in a folder, then copy the folder's path.
+                  -Go to 'languages_list.txt' and find your language's shortcut.
+               {G}*) Required arguments:{RF}
+                  -i        Path to the images folder.
+                  -l        Languages, e.g: '-l en_ar', this means from english to arabic;
+                            don't forget the underscore.
+               {G}*) Optional arguments:{RF}
+                  -o        Path of the output text file, default is: current directory.
+                  -c        Waiting time for an image to be translated before trying to copy its
+                            text (in seconds), default is 5.
+                  -q        After finishing, time to wait before closing the browser (in seconds),
+                            default is 60.
+                  -k        Keep the same connection for every server request (it may speed up the
+                            process), default is false.
+               {G}*) Tips:{RF}
+                  -Compress your files before uploading, thus you can use less waiting time argument (-c);
+                   you can use 'Curtail' for Linux, or 'MassCompressor' for Windows.
+                  -Use waiting time (-c) according to image size & internet speed, if it's too low
+                   you may get an error.
+                  -Not all languages are supported for image translating.""")
 
     print(message)
 
@@ -38,6 +45,7 @@ def get_arguments():
     """Organize the command line arguments."""
     global images_path, lang_1, lang_2, output_path, time_to_copy, time_to_quit, keep_alive
 
+    print(R, end='')
     required_args = []
     for index, arg in enumerate(sys.argv):
         if (arg == '-h') or (arg == 'help') or (arg == '--help'):
@@ -100,6 +108,8 @@ def get_arguments():
         print('Missing languages argument (-l)!')
         quit()
 
+    print(RF, end='')
+
 
 # Program options.
 translated_text = ''
@@ -161,9 +171,11 @@ for image in directory:
         copy_button = driver.find_element(By.CLASS_NAME, 'VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.LjDxcd.XhPA0b.LQeN7.qaqQfe')
         copy_button.click()
     except Exception as error:
+        print(R, end='')
         print('Error while copying: ' + repr(error))
         print("Try a higher number for '-c' argument!")
         print('Skipping image: ' + image)
+        print(RF, end='')
         error_occurred = True
 
     if not error_occurred:
@@ -171,8 +183,11 @@ for image in directory:
             copied_text = pyperclip.paste()
             translated_text += copied_text + '\n' + '-' * 100 + '\n'
         except Exception as error:
-            print('Error while copying: ' + repr(error))
+            print(R, end='')
+            print('Error accessing the clipboard: ' + repr(error))
+            print('Maybe you are missing python libraries (pyperclip) & (selenium).')
             print('Skipping image: ' + image)
+            print(RF, end='')
 
     else:
         error_occurred = False
@@ -184,26 +199,28 @@ for image in directory:
     close_button.click()
 
 # Save.
-print('\n\n')
+print('\n')
 try:
     output = open(output_path, 'w')
     output.write(translated_text)
     output.close()
 
     path = os.path.join(os.getcwd(), output_path)
-    print('Translated text saved in: ' + path)
+    print(G + 'Translated text saved in: ' + path + RF)
 except Exception as error:
-    print('Error: ' + repr(error))
+    print(R + 'Error: ' + repr(error) + RF)
     try:
         output = open('Translated Text.txt', "w")
         output.write(translated_text)
         output.close()
 
         path = os.path.abspath(os.getcwd() + '/Translated Text.txt')
-        print('Translated text saved in: ' + path)
-    except:
-        print('This is the translated text, save it:\n')
-        print(translated_text)
+        print(G + 'Translated text saved in: ' + path)
+    except Exception as error:
+        print(R + 'Error: ' + repr(error))
+        print('Could not save the text file.')
+        print(G + 'This is the translated text, save it:\n')
+        print(B + translated_text)
 
 # Quit & Close the browser.
 sleep(time_to_quit)
