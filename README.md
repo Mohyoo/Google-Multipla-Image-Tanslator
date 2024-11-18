@@ -1,7 +1,8 @@
 # Description
 1) A python program that allows you to translate multiple images
 via google translator, without wasting time in clicking & dragging; based on selenium.
-2) For now, it only works on Debian.
+2) Still under development, please report bugs.
+3) For now, it only works on Debian.
 
 # Requirements
 1) Python libraries: pyperclip & selenium.

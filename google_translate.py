@@ -2,7 +2,6 @@ import os
 import sys
 import pyperclip
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from time import sleep
 
@@ -38,6 +37,8 @@ def show_instructions():
 def get_arguments():
     """Organize the command line arguments."""
     global images_path, lang_1, lang_2, output_path, time_to_copy, time_to_quit, keep_alive
+
+    required_args = []
     for index, arg in enumerate(sys.argv):
         if (arg == '-h') or (arg == 'help') or (arg == '--help'):
             show_instructions()
@@ -45,6 +46,7 @@ def get_arguments():
 
         # Required arguments.
         elif arg == '-i':
+            required_args.append('-i')
             images_path = sys.argv[index + 1]
             if not os.path.exists(images_path):
                 print("Path doesn't exist, try absolute path instead!")
@@ -52,6 +54,7 @@ def get_arguments():
 
         elif arg == '-l':
             try:
+                required_args.append('-l')
                 lang_1, lang_2 = sys.argv[index + 1].split('_')
             except:
                 print('Enter two languages shortcuts separated with an underscore (_)!')
@@ -89,6 +92,14 @@ def get_arguments():
                 print("Keep connection option must be either true or false!")
                 quit()
 
+    # Check missing arguments.
+    if '-i' not in required_args:
+        print('Missing images folder argument (-i)!')
+        quit()
+    if '-l' not in required_args:
+        print('Missing languages argument (-l)!')
+        quit()
+
 
 # Program options.
 translated_text = ''
@@ -101,6 +112,7 @@ get_arguments()
 
 # Prepare the images.
 directory = os.listdir(images_path)
+only_names = directory[:]      # Used for debugging.
 for index, image in enumerate(directory):
     index = int(index)
     image = images_path + '/' + str(image)
@@ -141,22 +153,38 @@ for image in directory:
     """
 
     # Copy the translated text.
-    sleep(time_to_copy)    # Waiting for translation, it varies according to the internet speed.
-    copy_button = driver.find_element(By.CLASS_NAME, 'VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.LjDxcd.XhPA0b.LQeN7.qaqQfe')
-    copy_button.click()
+    image = only_names[directory.index(image)]      # Use the image name for errors, not full path.
+    error_occurred = False
 
     try:
-        copied_text = pyperclip.paste()
-        translated_text += copied_text + '\n' + '-' * 100 + '\n'
+        sleep(time_to_copy)    # Waiting for translation, it varies according to the internet speed.
+        copy_button = driver.find_element(By.CLASS_NAME, 'VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.LjDxcd.XhPA0b.LQeN7.qaqQfe')
+        copy_button.click()
     except Exception as error:
-        print('Error: ' + repr(error))
+        print('Error while copying: ' + repr(error))
+        print("Try a higher number for '-c' argument!")
         print('Skipping image: ' + image)
+        error_occurred = True
+
+    if not error_occurred:
+        try:
+            copied_text = pyperclip.paste()
+            translated_text += copied_text + '\n' + '-' * 100 + '\n'
+        except Exception as error:
+            print('Error while copying: ' + repr(error))
+            print('Skipping image: ' + image)
+
+    else:
+        error_occurred = False
+        print('Please, wait 7 seconds, we are handling errors.')
+        sleep(7)
 
     # Return & Upload another image.
     close_button = driver.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div[1]/div[2]/span[3]/button')
     close_button.click()
 
 # Save.
+print('\n\n')
 try:
     output = open(output_path, 'w')
     output.write(translated_text)
