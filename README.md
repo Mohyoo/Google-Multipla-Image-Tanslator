@@ -15,7 +15,7 @@ via google translator, without wasting time in clicking & dragging; based on sel
 2) A <b>'venv'</b> folder should appear, now before executing the program, activate the venv: ````source venv/bin/activate````
 2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues!).
 
-# Examples:
+# Examples
 1. For brief instructions, type in the terminal: ````python google_translate.py -h```` <br>
 ### 1) Example 1: This is the simplest command: <br>
 ````
@@ -40,7 +40,7 @@ python google_translate.py -i images -l en_ar -o output.txt -c 5 -q 60 -k true
 -The argument <b>'-k true'</b> is an HTTP connection parameter; when true, the client binding keeps the
  same connection for every request, which <b>may</b> speed up the process.
 
-# Exiting venv & uninstallation.
+# Exiting venv & uninstallation
 1) To deactivate the venv, simply type: ````deactivate````
 2) To remove the venv, simply delete the folder.
 3) A <b>selenium</b> folder may be left in the <b>~/.cache</b> directory, delete it.
