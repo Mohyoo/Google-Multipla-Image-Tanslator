@@ -3,7 +3,7 @@
 via google translator, without wasting time in clicking & dragging; based on selenium.
 2) For now, it only works on Debian.
 
-# Requirements.
+# Requirements
 1) Python libraries: pyperclip & selenium.
 2) Linux packages: xclip, xsel & wl-clipboard.
 3) Google Chrome.
