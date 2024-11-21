@@ -1,11 +1,17 @@
-import os
-import sys
-import pyperclip
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from time import sleep
+try:
+    import os
+    import sys
+    import pyperclip
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from time import sleep
 
-# Setup fonts.
+except Exception as error:
+    print('Error while importing modules, did you install all the requirements?')
+    print(repr(error))
+    quit()
+
+# Prepare the fonts.
 R  = '\033[31m\033[1m'      # Red.
 G  = '\033[32m\033[1m'      # Green.
 B  = '\033[34m'             # Blue.
@@ -25,8 +31,6 @@ def show_instructions():
                             don't forget the underscore.
                {G}*) Optional arguments:{RF}
                   -o        Path of the output text file, default is: current directory.
-                  -c        Waiting time for an image to be translated before trying to copy its
-                            text (in seconds), default is 5.
                   -q        After finishing, time to wait before closing the browser (in seconds),
                             default is 60.
                   -k        Keep the same connection for every server request (it may speed up the
@@ -79,13 +83,6 @@ def get_arguments():
                 print("Couldn't create the output file, try another path!")
                 quit()
 
-        elif arg == '-c':
-            try:
-                time_to_copy = int(sys.argv[index + 1])
-            except:
-                print("Waiting time must be a number!")
-                quit()
-
         elif arg == '-q':
             try:
                 time_to_quit = int(sys.argv[index + 1])
@@ -111,10 +108,27 @@ def get_arguments():
     print(RF, end='')
 
 
+def emergency_save():
+    """In case of unexpected error, immediately save the translated text."""
+    try:
+        output = open('Translated Text.txt', "w")
+        output.write(translated_text)
+        output.close()
+
+        path = os.path.abspath(os.getcwd() + '/Translated Text.txt')
+        print(G + 'Translated text was partially saved in: ' + path)
+    except Exception as error:
+        print(R + 'Error: ' + repr(error))
+        print('Could not save the text file.')
+        print(G + 'This is the translated text, save it:\n')
+        print(B + translated_text)
+
+
 # Program options.
 translated_text = ''
 output_path = 'Translated Text.txt'
-time_to_copy = 5
+time_to_click = 0.1
+MAX_ATTEMPTS = 600
 time_to_quit = 60
 keep_alive = False
 
@@ -129,99 +143,125 @@ for index, image in enumerate(directory):
     directory[index] = os.path.abspath(image)
 
 # Set up the driver.
-options = webdriver.ChromeOptions()
-options.add_experimental_option('excludeSwitches', ['enable-automation'])
-options.add_experimental_option('useAutomationExtension', False)
-options.add_argument('start-maximized')                 # Same as terminal args, just removed the (--) prefix.
-options.add_argument('remote-debugging-port=9222')      # Port must be > 1000.
+try:
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_argument('start-maximized')                 # Same as terminal args, just removed the (--) prefix.
+    options.add_argument('remote-debugging-port=9222')      # Port must be > 1000.
 
-driver = webdriver.Chrome(options=options, keep_alive=keep_alive)
+    driver = webdriver.Chrome(options=options, keep_alive=keep_alive)
 
-URL = f'https://translate.google.com/?sl={lang_1}&tl={lang_2}&op=images'
-driver.get(URL)
+    URL = f'https://translate.google.com/?sl={lang_1}&tl={lang_2}&op=images'
+    driver.get(URL)
 
-# Start translating.
-for image in directory:
-    # Find file input field & Give the path.
-    file_field = driver.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/input')
-    file_field.send_keys(image)     # image is passed as a path.
+    # Start translating.
+    for image in directory:
+        # Find file input field & Give the path.
+        attempts = 0
+        while True:
+            try:
+                file_field = driver.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/input')
+                file_field.send_keys(image)     # image is passed as a path.
+                break
+            except:
+                if attempts >= MAX_ATTEMPTS:
+                    print('Timeout, skipping this image...')
+                    driver.get(URL)
+                    continue
+                else:
+                    attempts += 1
+                    sleep(time_to_click)
 
-    # In case we wanna use the open dialog method instead (only Windows):
-    """
-    from pynput.keyboard import Key, Controller
-    
-    # Find the upload button.
-    upload_button = driver.find_element(By.XPATH, "/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/div/button/span")
-    upload_button.click()
-    sleep(1)
-    
-    # Enter the path in the dialog's input field.
-    keyword = Controller()
-    keyword.type("/home/mohyoo/Pictures/Wallpaper/3.jpg")
-    keyword.press(Key.enter)
-    keyword.release(Key.enter)
-    """
+        # In case we wanna use the open dialog method instead (only Windows):
+        """
+        from pynput.keyboard import Key, Controller
+        
+        # Find the upload button.
+        upload_button = driver.find_element(By.XPATH, "/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/div/button/span")
+        upload_button.click()
+        sleep(1)
+        
+        # Enter the path in the dialog's input field.
+        keyword = Controller()
+        keyword.type("/home/mohyoo/Pictures/Wallpaper/3.jpg")
+        keyword.press(Key.enter)
+        keyword.release(Key.enter)
+        """
 
-    # Copy the translated text.
-    image = only_names[directory.index(image)]      # Use the image name for errors, not full path.
-    error_occurred = False
+        # Copy the translated text.
+        image = only_names[directory.index(image)]      # Use the image name for errors, not full path.
+        attempts = 0
 
-    try:
-        sleep(time_to_copy)    # Waiting for translation, it varies according to the internet speed.
-        copy_button = driver.find_element(By.CLASS_NAME, 'VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.LjDxcd.XhPA0b.LQeN7.qaqQfe')
-        copy_button.click()
-    except Exception as error:
-        print(R, end='')
-        print('Error while copying: ' + repr(error))
-        print("Try a higher number for '-c' argument!")
-        print('Skipping image: ' + image)
-        print(RF, end='')
-        error_occurred = True
+        try:
+            while True:
+                try:
+                    copy_button = driver.find_element(By.CLASS_NAME, 'VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.LjDxcd.XhPA0b.LQeN7.qaqQfe')
+                    copy_button.click()
+                    break
+                except:
+                    if attempts >= MAX_ATTEMPTS:
+                        print('Timeout, skipping this image...')
+                        driver.get(URL)
+                        continue
+                    else:
+                        attempts += 1
+                        sleep(time_to_click)
 
-    if not error_occurred:
+        except Exception as error:
+            print(R + 'Error while copying: ' + repr(error))
+            print('Skipping image: ' + image + RF)
+            driver.get(URL)
+            continue
+
+        # Access the copied text from clipboard.
         try:
             copied_text = pyperclip.paste()
             translated_text += copied_text + '\n' + '-' * 100 + '\n'
         except Exception as error:
-            print(R, end='')
-            print('Error accessing the clipboard: ' + repr(error))
-            print('Maybe you are missing python libraries (pyperclip) & (selenium).')
-            print('Skipping image: ' + image)
-            print(RF, end='')
+            print(R + 'Error while accessing the clipboard: ' + repr(error))
+            print('Maybe you are missing python libraries: (pyperclip) & (selenium).')
+            print('Skipping image: ' + image + RF)
 
-    else:
-        error_occurred = False
-        print('Please, wait 7 seconds, we are handling errors.')
-        sleep(7)
 
-    # Return & Upload another image.
-    close_button = driver.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div[1]/div[2]/span[3]/button')
-    close_button.click()
+        # Return & Upload another image.
+        attempts = 0
 
-# Save.
-print('\n')
-try:
-    output = open(output_path, 'w')
-    output.write(translated_text)
-    output.close()
+        while True:
+            try:
+                close_button = driver.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[5]/c-wiz/div[2]/c-wiz/div/div[1]/div[2]/span[3]/button')
+                close_button.click()
+                break
+            except:
+                if attempts >= MAX_ATTEMPTS:
+                    print('Timeout, skipping this image...')
+                    driver.get(URL)
+                    continue
+                else:
+                    attempts += 1
+                    sleep(time_to_click)
 
-    path = os.path.join(os.getcwd(), output_path)
-    print(G + 'Translated text saved in: ' + path + RF)
-except Exception as error:
-    print(R + 'Error: ' + repr(error) + RF)
+
+    # Save the translated text.
+    print('\n')
     try:
-        output = open('Translated Text.txt', "w")
+        output = open(output_path, 'w')
         output.write(translated_text)
         output.close()
 
-        path = os.path.abspath(os.getcwd() + '/Translated Text.txt')
-        print(G + 'Translated text saved in: ' + path)
+        path = os.path.join(os.getcwd(), output_path)
+        print(G + 'Translated text saved in: ' + path + RF)
     except Exception as error:
-        print(R + 'Error: ' + repr(error))
-        print('Could not save the text file.')
-        print(G + 'This is the translated text, save it:\n')
-        print(B + translated_text)
+        print(R + 'Error: ' + repr(error) + RF)
+        emergency_save()
 
-# Quit & Close the browser.
-sleep(time_to_quit)
-driver.quit()
+    # Quit & Close the browser.
+    sleep(time_to_quit)
+    driver.quit()
+
+except Exception as error:
+    print('\nUnexpected error, please report the red text to me.' + G)
+    print('Github: https://github.com/Mohyoo/Google-Multiple-Images-Tanslator/issues')
+    print('Email: didouna.mohyeddine@gmail.com' + R)
+    emergency_save()
+    raise error
