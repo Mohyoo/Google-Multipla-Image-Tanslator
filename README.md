@@ -2,7 +2,7 @@
 1) A python program that allows you to translate multiple images
 via google translator, without wasting time in clicking & dragging; based on selenium.
 2) Still under development, please report bugs.
-3) For now, it only works on Debian.
+3) For now, it only works on Debian; but it may work for other ditributions if you know how to install dependencies.
 
 # Requirements
 1) Python libraries: pyperclip & selenium.
@@ -10,7 +10,7 @@ via google translator, without wasting time in clicking & dragging; based on sel
 3) Google Chrome.
 
 # Installation
-- There is an installer for the requirements, but you can install them manually & skip step (1). <br>
+- There is an installer for the requirements (for Debian), but you can install them manually & skip step (1). <br>
 - Open the terminal in the program's directory and:
 1) type: ````python install_requirements.py```` (or python3), and wait.
 2) A <b>'venv'</b> folder should appear, now before executing the program, activate the venv: ````source venv/bin/activate````
