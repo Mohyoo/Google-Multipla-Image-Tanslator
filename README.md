@@ -10,7 +10,7 @@ via google translator, without wasting time in clicking & dragging; based on sel
 3) Google Chrome.
 
 # Installation
-- There is an installer for the requirements (for Debian), but you can install them manually & skip step (1). <br>
+- There is an installer for the requirements (for Debian), but you can install them manually (better to install python libraries in a venv) & skip step (1). <br>
 - Open the terminal in the program's directory and:
 1) type: ````python install_requirements.py```` (or python3), and wait.
 2) A <b>'venv'</b> folder should appear, now before executing the program, activate the venv: ````source venv/bin/activate````
