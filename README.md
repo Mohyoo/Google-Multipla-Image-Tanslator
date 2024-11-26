@@ -7,14 +7,14 @@ via google translator, without wasting time in clicking & dragging; based on sel
 # Requirements
 1) Python libraries: pyperclip & selenium.
 2) Linux packages: xclip, xsel & wl-clipboard.
-3) Google Chrome.
+3) Google Chrome or Chromium.
 
 # Installation
 - There is an installer for the requirements (for Debian), but you can install them manually (better to install python libraries in a venv) & skip step (1). <br>
 - Open the terminal in the program's directory and:
 1) type: ````python install_requirements.py```` (or python3), and wait.
 2) A <b>'venv'</b> folder should appear, now before executing the program, activate the venv: ````source venv/bin/activate````
-2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues!).
+2) Download & install google chrome: https://www.google.com/chrome/ (flatpak repository may cause issues!); or Chromium.
 
 # Examples
 -For brief instructions, type in the terminal: ````python google_translate.py -h```` <br>
